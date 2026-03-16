@@ -1,7 +1,6 @@
 import { Plugin, Notice, addIcon } from 'obsidian';
 import { AudioRecorder } from './recorder';
 import { transcribe } from './transcriber';
-import { translate } from './translator';
 import { insertText } from './inserter';
 import { WhisperSettingTab, WhisperPluginSettings, DEFAULT_SETTINGS } from './settings';
 
@@ -136,14 +135,7 @@ export default class WhisperPlugin extends Plugin {
 
 		try {
 			const { text } = await transcribe(result.blob, result.mimeType, this.settings);
-
-			let finalText = text;
-			if (this.settings.enableTranslation) {
-				new Notice('Translating…');
-				finalText = await translate(text, this.settings);
-			}
-
-			insertText(this.app, finalText, this.settings.outputFormat);
+			insertText(this.app, text, this.settings.outputFormat);
 			new Notice('Transcription inserted.');
 		} catch (err) {
 			new Notice(`Transcription failed: ${(err as Error).message}`);

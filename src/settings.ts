@@ -2,22 +2,12 @@ import { App, PluginSettingTab, Setting } from 'obsidian';
 import type WhisperPlugin from './main';
 
 export type OutputFormat = 'plain' | 'callout' | 'timestamp';
-export type TranslationProvider = 'openai' | 'deepl';
 export type WhisperModel = 'tiny' | 'base' | 'small' | 'medium' | 'large-v3';
 
 export interface WhisperPluginSettings {
-	// Sidecar
 	sidecarUrl: string;
 	whisperModel: WhisperModel;
-	// Language
 	sourceLanguage: string;
-	// Translation
-	enableTranslation: boolean;
-	translationProvider: TranslationProvider;
-	targetLanguage: string;
-	openAiApiKey: string;   // used only for OpenAI-based translation
-	deepLApiKey: string;
-	// Output
 	outputFormat: OutputFormat;
 	maxRecordingSeconds: number;
 }
@@ -26,11 +16,6 @@ export const DEFAULT_SETTINGS: WhisperPluginSettings = {
 	sidecarUrl: 'http://localhost:8000',
 	whisperModel: 'base',
 	sourceLanguage: '',
-	enableTranslation: false,
-	translationProvider: 'openai',
-	targetLanguage: 'en',
-	openAiApiKey: '',
-	deepLApiKey: '',
 	outputFormat: 'plain',
 	maxRecordingSeconds: 300,
 };
@@ -124,80 +109,6 @@ export class WhisperSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 					});
 			});
-
-		// --- Translation ---
-		containerEl.createEl('h3', { text: 'Translation' });
-
-		new Setting(containerEl)
-			.setName('Enable translation')
-			.setDesc('After transcription, translate the text to the target language.')
-			.addToggle(toggle => toggle
-				.setValue(this.plugin.settings.enableTranslation)
-				.onChange(async (value) => {
-					this.plugin.settings.enableTranslation = value;
-					await this.plugin.saveSettings();
-					this.display();
-				}));
-
-		if (this.plugin.settings.enableTranslation) {
-			new Setting(containerEl)
-				.setName('Translation provider')
-				.setDesc('Which service to use for translation.')
-				.addDropdown(drop => drop
-					.addOption('openai', 'OpenAI (GPT-4o mini)')
-					.addOption('deepl', 'DeepL API')
-					.setValue(this.plugin.settings.translationProvider)
-					.onChange(async (value) => {
-						this.plugin.settings.translationProvider = value as TranslationProvider;
-						await this.plugin.saveSettings();
-						this.display();
-					}));
-
-			const targetLanguages = Object.entries(LANGUAGES).filter(([code]) => code !== '');
-
-			new Setting(containerEl)
-				.setName('Target language')
-				.setDesc('Language to translate the transcription into.')
-				.addDropdown(drop => {
-					for (const [code, name] of targetLanguages) {
-						drop.addOption(code, name);
-					}
-					return drop
-						.setValue(this.plugin.settings.targetLanguage)
-						.onChange(async (value) => {
-							this.plugin.settings.targetLanguage = value;
-							await this.plugin.saveSettings();
-						});
-				});
-
-			if (this.plugin.settings.translationProvider === 'openai') {
-				new Setting(containerEl)
-					.setName('OpenAI API key')
-					.setDesc('Required for OpenAI translation. Get yours at platform.openai.com.')
-					.addText(text => text
-						.setPlaceholder('sk-...')
-						.setValue(this.plugin.settings.openAiApiKey)
-						.onChange(async (value) => {
-							this.plugin.settings.openAiApiKey = value.trim();
-							await this.plugin.saveSettings();
-						})
-						.inputEl.setAttribute('type', 'password'));
-			}
-
-			if (this.plugin.settings.translationProvider === 'deepl') {
-				new Setting(containerEl)
-					.setName('DeepL API key')
-					.setDesc('Get yours at deepl.com/pro-api. Free tier keys end with ":fx".')
-					.addText(text => text
-						.setPlaceholder('your-deepl-key:fx')
-						.setValue(this.plugin.settings.deepLApiKey)
-						.onChange(async (value) => {
-							this.plugin.settings.deepLApiKey = value.trim();
-							await this.plugin.saveSettings();
-						})
-						.inputEl.setAttribute('type', 'password'));
-			}
-		}
 
 		// --- Output ---
 		containerEl.createEl('h3', { text: 'Output' });
