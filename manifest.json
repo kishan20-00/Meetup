@@ -1,0 +1,11 @@
+{
+  "id": "obsidian-whisper-plugin",
+  "name": "Whisper Transcription",
+  "version": "1.0.0",
+  "minAppVersion": "1.4.0",
+  "description": "Record audio and transcribe it into your notes using OpenAI Whisper. Optionally translate the output.",
+  "author": "obsidian-whisper-plugin",
+  "authorUrl": "",
+  "fundingUrl": "",
+  "isDesktopOnly": true
+}

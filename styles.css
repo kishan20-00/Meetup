@@ -1,0 +1,17 @@
+/* Whisper Transcription Plugin */
+
+.whisper-status {
+	font-size: var(--font-ui-small);
+}
+
+/* Pulsing animation on the ribbon icon while recording */
+.whisper-recording {
+	animation: whisper-pulse 1.2s ease-in-out infinite;
+	color: var(--color-red) !important;
+}
+
+@keyframes whisper-pulse {
+	0%   { opacity: 1; }
+	50%  { opacity: 0.4; }
+	100% { opacity: 1; }
+}
