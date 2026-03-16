@@ -1,0 +1,26 @@
+# Plugin build output
+main.js
+main.js.map
+
+# Dependencies
+node_modules/
+
+# Python sidecar
+sidecar/venv/
+sidecar/__pycache__/
+sidecar/*.pyc
+__pycache__/
+*.pyc
+*.pyo
+
+# Whisper model cache (can be several GB)
+sidecar/models/
+~/.cache/whisper/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
